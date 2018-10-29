@@ -1,4 +1,9 @@
 group Server
     FSharp.Core
-    Saturn
+    Giraffe
+    
     Fable.JsonConverter
+    Thoth.Json.Net
+    Reaction
+    Reaction.Giraffe
+    TaskBuilder.fs

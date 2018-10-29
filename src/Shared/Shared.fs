@@ -55,13 +55,28 @@ namespace Shared
         name : string;
     }    
 
+    // TODO: revisit
+    type ChannelActionType = 
+        UserHasJoined | UserHasLeft 
+
+    type ChannelAction = {
+        actionType : ChannelActionType;
+        userId : Guid;
+        channelId : Guid;
+    }
+
+    type MessageAction = {
+        userId : Guid; // author or moderator / admin
+        message : Message; 
+    }
+
     // Event of different types   
     type Event = 
-        | MessagePosted of Message // add or update
-        | MessageDeleted of { initiatorUserId : Guid; messageId : Guid; channelId : Guid; } // userId - who is requeting to deleted it
-        | UserJoined of { "joined"; userId : Guid; channelId : Guid; }
-        | UserLeft of { "left"; userId : Guid; channelId : Guid; }
-        | RoleAssignmentUpdated of {initiatorUserId : Guid; updtedUser : User;} 
+        | MessagePosted of MessageAction // add or update
+        | MessageDeleted of MessageAction
+        | UserJoined of ChannelAction
+        | UserLeft of ChannelAction
+        | RoleAssignmentUpdated of Guid * User // guid - initiation user id 
 
         // TODO: a more elegant way of doing this?
         static member Encode (event: Event) : string =
