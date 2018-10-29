@@ -7,43 +7,13 @@ namespace Shared
     open Thoth.Json.Net
     #endif
 
-
     // TODO: figure out shared modules later.
-    // presumably: types, security, messaging
+    // presumably: types, auth, messaging
     // module Types =
 
     type Counter = int
 
-
-    static member Encode (msg: Msg) : string =
-        let data =
-            match msg with
-            | Increment ->
-                Encode.object [ "msg", Encode.string "increment"]
-            | Decrement ->
-                Encode.object [ "msg", Encode.string "decrement"]
-            | _ ->
-                Encode.object []
-
-        Encode.toString 4 data
-
-    static member Decode (json: string) : Option<Msg> =
-        let decodeMsg =
-            (Decode.field "msg" Decode.string)
-            |> Decode.map (fun str ->
-                            match str with
-                            | "increment" -> Increment
-                            | "decrement" -> Decrement
-                            | _ -> Decrement
-                          )
-        let result = Decode.fromString decodeMsg json
-
-        match result with
-        | Ok msg ->
-            Some msg
-        | Error err ->
-            None
-
+    
     // Authorization types
     type RoleType = Visitor | Moderator | Admin    
 
@@ -85,17 +55,52 @@ namespace Shared
         name : string;
     }    
 
-    // Messaging types
-    type EventType = 
-    MessagePosted | MessageUpdated | MessageDeleted | 
-    UserJoined | UserLeft | UserRoleAssigned
-
+    // Event of different types   
     type Event = 
         | MessagePosted of Message // add or update
         | MessageDeleted of { initiatorUserId : Guid; messageId : Guid; channelId : Guid; } // userId - who is requeting to deleted it
         | UserJoined of { "joined"; userId : Guid; channelId : Guid; }
         | UserLeft of { "left"; userId : Guid; channelId : Guid; }
         | RoleAssignmentUpdated of {initiatorUserId : Guid; updtedUser : User;} 
+
+        // TODO: a more elegant way of doing this?
+        static member Encode (event: Event) : string =
+            let data =
+                match event with
+                | MessagePosted -> 
+                    Encode.object ["event", Encode.string "MessagePosted" ]
+                | MessageDeleted ->
+                    Encode.object ["event", Encode.string "MessageDeleted" ]
+                | UserJoined ->
+                    Encode.object ["event", Encode.string "UserJoined" ]
+                | UserLeft ->
+                    Encode.object ["event", Encode.string "UserLeft" ]
+                | RoleAssignmentUpdated ->
+                    Encode.object ["event", Encode.string "RoleAssignmentUpdated" ]
+                | _ -> Encode.object []
+
+            Encode.toString 4 data
+
+        static member Decode (json: string) : Option<Event> =
+            let decodeEvent =
+                (Decode.field "event" Decode.string)
+                |> Decode.map (fun str ->
+                                match str with
+                                | "MessagePosted" -> MessagePosted
+                                | "MessageDeleted" -> MessageDeleted
+                                | "UserJoined" -> UserJoined
+                                | "UserLeft" -> UserLeft
+                                | "RoleAssignmentUpdated" -> RoleAssignmentUpdated
+                                | _ -> Decrement
+                            )
+            let result = Decode.fromString decodeEvent json
+
+            match result with
+            | Ok event ->
+                Some event
+            | Error err ->
+                None
+
         
 
 
