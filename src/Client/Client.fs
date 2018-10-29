@@ -8,6 +8,7 @@ open Fable.Helpers.React.Props
 open Fable.PowerPack.Fetch
 
 open Shared
+//open Shared.Types
 
 open Fulma
 
@@ -16,7 +17,11 @@ open Fulma
 // in this case, we are keeping track of a counter
 // we mark it as optional, because initially it will not be available from the client
 // the initial value will be requested from server
-type Model = { Counter: Counter option }
+type Model = { 
+    Counter: Counter option;
+    Messages : string list;
+    
+    }
 
 // The Msg type defines what events/actions can occur while the application is running
 // the state of the application changes *only* in reaction to these events
@@ -24,7 +29,6 @@ type Msg =
 | Increment
 | Decrement
 | InitialCountLoaded of Result<Counter, exn>
-
 
 
 // defines the initial state and initial command (= side-effect) of the application
@@ -43,14 +47,23 @@ let init () : Model * Cmd<Msg> =
 // these commands in turn, can dispatch messages to which the update function will react.
 let update (msg : Msg) (currentModel : Model) : Model * Cmd<Msg> =
     match currentModel.Counter, msg with
+
     | Some x, Increment ->
-        let nextModel = { currentModel with Counter = Some (x + 1) }
+        let nextModel = { 
+            currentModel with Counter = Some (x + 1) 
+            }
         nextModel, Cmd.none
+
     | Some x, Decrement ->
-        let nextModel = { currentModel with Counter = Some (x - 1) }
+        let nextModel = { 
+            currentModel with Counter = Some (x - 1) 
+            }
         nextModel, Cmd.none
+
     | _, InitialCountLoaded (Ok initialCount)->
-        let nextModel = { Counter = Some initialCount }
+        let nextModel = { 
+            Counter = Some initialCount 
+            }
         nextModel, Cmd.none
 
     | _ -> currentModel, Cmd.none
@@ -110,12 +123,16 @@ open Elmish.HMR
 #endif
 
 Program.mkProgram init update view
+
 #if DEBUG
 |> Program.withConsoleTrace
 |> Program.withHMR
 #endif
+
 |> Program.withReact "elmish-app"
+
 #if DEBUG
 |> Program.withDebugger
 #endif
+
 |> Program.run
