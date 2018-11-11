@@ -1,9 +1,14 @@
 group Server
     FSharp.Core
     Giraffe
-    
+    Saturn
+    Microsoft.AspNetCore
+    Microsoft.AspNetCore.Builder
+    Microsoft.AspNetCore.StaticFiles
+    Microsoft.AspNetCore.WebSockets
     Fable.JsonConverter
     Thoth.Json.Net
     Reaction
     Reaction.Giraffe
     TaskBuilder.fs
+

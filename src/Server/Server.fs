@@ -1,40 +1,49 @@
-open System.IO
-open System.Threading.Tasks
+module Server
+    open System
+    open System.IO
+    open System.Threading.Tasks
 
-open Microsoft.AspNetCore.Builder
-open Microsoft.Extensions.DependencyInjection
-open Giraffe
-open Saturn
-open Shared
-//open Shared.Types
+    open Microsoft.AspNetCore
+    open Microsoft.AspNetCore.Builder
+    open Microsoft.AspNetCore.Hosting
+    open Microsoft.Extensions.DependencyInjection
 
-open Giraffe.Serialization
+    open FSharp.Control.Tasks.V2.ContextInsensitive
 
-let publicPath = Path.GetFullPath "../Client/public"
-let port = 8085us
+    open Giraffe
+    open Giraffe.Serialization
 
-let getInitCounter() : Task<Counter> = task { return 42 }
+    open Reaction.Giraffe.Middleware
+    open Reaction
+    open Reaction.AsyncObservable
 
-let webApp = router {
-    get "/api/init" (fun next ctx ->
-        task {
-            let! counter = getInitCounter()
-            return! Successful.OK counter next ctx
-        })
-}
+    open Shared
 
-let configureSerialization (services:IServiceCollection) =
-    let fableJsonSettings = Newtonsoft.Json.JsonSerializerSettings()
-    fableJsonSettings.Converters.Add(Fable.JsonConverter())
-    services.AddSingleton<IJsonSerializer>(NewtonsoftJsonSerializer fableJsonSettings)
+    let publicPath = Path.GetFullPath "../Client/public"
+    let port = 8085us
 
-let app = application {
-    url ("http://0.0.0.0:" + port.ToString() + "/")
-    use_router webApp
-    memory_cache
-    use_static publicPath
-    service_config configureSerialization
-    use_gzip
-}
+    let getInitCounter() : Task<Counter> = task { return 42 }
 
-run app
+    let webApp = router {
+        get "/api/init" (fun next ctx ->
+            task {
+                let! counter = getInitCounter()
+                return! Successful.OK counter next ctx
+            })
+    }
+
+    let configureSerialization (services:IServiceCollection) =
+        let fableJsonSettings = Newtonsoft.Json.JsonSerializerSettings()
+        fableJsonSettings.Converters.Add(Fable.JsonConverter())
+        services.AddSingleton<IJsonSerializer>(NewtonsoftJsonSerializer fableJsonSettings)
+
+    let app = application {
+        url ("http://0.0.0.0:" + port.ToString() + "/")
+        use_router webApp
+        memory_cache
+        use_static publicPath
+        service_config configureSerialization
+        use_gzip
+    }
+
+    run app

@@ -82,39 +82,38 @@ namespace Shared
         static member Encode (event: Event) : string =
             let data =
                 match event with
-                | MessagePosted -> 
+                | MessagePosted _ -> 
                     Encode.object ["event", Encode.string "MessagePosted" ]
-                | MessageDeleted ->
+                | MessageDeleted _ ->
                     Encode.object ["event", Encode.string "MessageDeleted" ]
-                | UserJoined ->
+                | UserJoined _ ->
                     Encode.object ["event", Encode.string "UserJoined" ]
-                | UserLeft ->
+                | UserLeft _ ->
                     Encode.object ["event", Encode.string "UserLeft" ]
-                | RoleAssignmentUpdated ->
+                | RoleAssignmentUpdated _ ->
                     Encode.object ["event", Encode.string "RoleAssignmentUpdated" ]
-                | _ -> Encode.object []
 
             Encode.toString 4 data
 
-        static member Decode (json: string) : Option<Event> =
-            let decodeEvent =
-                (Decode.field "event" Decode.string)
-                |> Decode.map (fun str ->
-                                match str with
-                                | "MessagePosted" -> MessagePosted
-                                | "MessageDeleted" -> MessageDeleted
-                                | "UserJoined" -> UserJoined
-                                | "UserLeft" -> UserLeft
-                                | "RoleAssignmentUpdated" -> RoleAssignmentUpdated
-                                | _ -> Decrement
-                            )
-            let result = Decode.fromString decodeEvent json
-
-            match result with
-            | Ok event ->
-                Some event
-            | Error err ->
-                None
+        // static member Decode (json: string) : Option<Event> =
+        //     let decodeEvent =
+        //          (Decode.field "event" Decode.string)
+        //          |> Decode.map (fun str ->
+        //                          match str with
+        //                          | "MessagePosted" -> Decode.Auto.fromString<MessageAction>(json) 
+        //                          | "MessageDeleted" -> Decode.Auto.fromString<MessageAction>(json) 
+        //                          | "UserJoined" -> Decode.Auto.fromString<ChannelAction>(json) 
+        //                          | "UserLeft" ->  Decode.Auto.fromString<ChannelAction>(json) 
+        //                          | "RoleAssignmentUpdated" -> RoleAssignmentUpdated
+        //                          | _ -> 
+        //                      )
+        //     let result = Decode.fromString decodeEvent json
+            
+        //     match result with
+        //     | Ok event ->
+        //         Some(event)
+        //     | Error err ->
+        //         None
 
         
 

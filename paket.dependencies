@@ -1,25 +1,45 @@
+
+source https://www.nuget.org/api/v2
+storage: none
+
+nuget Fable.Core ~> 2
+nuget Fable.React ~> 2
+nuget Fable.Elmish ~> 2
+nuget Reaction.AsyncRx prerelease
+
 group Server
     storage: none
     source https://api.nuget.org/v3/index.json
 
-    nuget FSharp.Core
+    nuget FSharp.Core    
+    nuget Giraffe
     nuget Saturn
+    nuget Microsoft.AspNetCore
+    nuget Microsoft.AspNetCore.Builder
+    nuget Microsoft.AspNetCore.StaticFiles
+    nuget Microsoft.AspNetCore.WebSockets
     nuget Fable.JsonConverter
+    nuget Thoth.Json.Net
+    nuget Reaction
+    nuget Reaction.Giraffe
+    nuget TaskBuilder.fs
+
+    
 
 group Client
     storage: none
     source https://api.nuget.org/v3/index.json
-
     nuget Fable.Core
     nuget Fable.Elmish.Debugger
     nuget Fable.Elmish.React
     nuget Fable.Elmish.HMR
+    nuget Fable.Reaction
     nuget Fulma
     nuget Fable.Core ~> 2
     nuget Fable.Elmish ~> 2
-    nuget Fable.React ~> 2
-    nuget Reaction ~> 1
-
+    nuget Fable.React //~> 2
+    nuget Reaction ~> 1        
+    nuget Thoth.Json
     clitool dotnet-fable
 
 group Build
